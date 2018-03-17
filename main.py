@@ -8,7 +8,7 @@ from git import Repo
 import sys
 
 def update_main_repo():
-    tpcc_repo = Repo.init(os.path.join(config.path_to_repos, "tpcc-course-2018"))
+    tpcc_repo = Repo.init(os.path.join(config.path_to_repos, config.course_repo_name))
     origin = tpcc_repo.remote('origin')
     origin.pull()
     # print("Reading from tpcc-course-2018:")
@@ -18,7 +18,7 @@ def update_main_repo():
 def build(task_name):
     build_path = os.path.join(
         config.path_to_repos,
-        'tpcc-course-2018',
+        config.course_repo_name,
         'tasks',
         task_name,
         'build'
@@ -80,7 +80,7 @@ def create_merge_request(task_name):
     gl = gitlab.Gitlab("https://gitlab.com", private_token=config.private_token)
     gl.auth()
 
-    tpcc_project = gl.projects.get('tpcc-course-2018/{}-{}-{}'.format(
+    tpcc_project = gl.projects.get(config.sol_repo_user + '/{}-{}-{}'.format(
         config.group_number,
         config.first_name.lower(),
         config.last_name.lower()
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         except Exception as e:
             print("Build failed")
             print(e)
-            sys.exit(1)
+            # sys.exit(1)
 
 
     if args.push or args.all:

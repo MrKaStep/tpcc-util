@@ -7,7 +7,6 @@ import config
 import os
 from shutil import which
 from git import Repo
-import sys
 
 
 def update_main_repo():

@@ -6,6 +6,6 @@ path_to_repos       = "<path>"                          # path to directory cont
                                                         # for example, "/home/step/repos/mipt-tpcc-2018"
 assignee_username   = "<username>"                      # for example, "tau0" for Nickolay Sukhanov
 course_repo_name    = "tpcc-course-2018"                # name of directory containing course repo
-sol_repo_use        = "tpcc-course-2018"
+sol_repo_user        = "tpcc-course-2018"
 
 

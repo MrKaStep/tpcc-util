@@ -5,7 +5,7 @@ import config
 import os
 from shutil import which
 from git import Repo
-
+import sys
 
 def update_main_repo():
     tpcc_repo = Repo.init(os.path.join(config.path_to_repos, "tpcc-course-2018"))
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         except Exception as e:
             print("Build failed")
             print(e)
-            # sys.exit(1)
+            sys.exit(1)
 
 
     if args.push or args.all:

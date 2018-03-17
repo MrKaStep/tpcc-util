@@ -8,4 +8,3 @@ assignee_username   = "<username>"                      # for example, "tau0" fo
 course_repo_name    = "tpcc-course-2018"                # name of directory containing course repo
 sol_repo_use        = "tpcc-course-2018"
 
-

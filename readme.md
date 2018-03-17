@@ -8,9 +8,9 @@ tpcc - утилита для упрощения работы с курсом tpc
 
 1. Выполните
     ```bash
-    $ git clone git@github.com:mrkastep/tpcc-util
-    $ cd tpcc-util
-    $ ./install.sh
+    git clone git@github.com:mrkastep/tpcc-util
+    cd tpcc-util
+    ./install.sh
     ```
     в директории, куда вы хотите установить утилиту.
 1. (опционально) Добавьте директорию `tpcc-util` в `PATH`

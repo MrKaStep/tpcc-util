@@ -80,11 +80,25 @@ def create_merge_request(task_name):
     gl = gitlab.Gitlab("https://gitlab.com", private_token=config.private_token)
     gl.auth()
 
-    tpcc_project = gl.projects.get(config.sol_repo_user + '/{}-{}-{}'.format(
-        config.group_number,
-        config.first_name.lower(),
-        config.last_name.lower()
-    ))
+    trcc_project = None
+
+    try:
+        tpcc_project = gl.projects.get(config.sol_repo_user + '/{}-{}-{}'.format(
+            config.group_number,
+            config.first_name.lower(),
+            config.last_name.lower()
+        ))
+    except gitlab.exceptions.GitlabGetError:
+        try:
+            tpcc_project = gl.projects.get(config.sol_repo_user + '/{}-{}-{}'.format(
+                config.group_number,
+                config.last_name.lower(),
+                config.first_name.lower()
+            ))
+        except gitlab.exceptions.GitlabGetError:
+            print("Repository not found. Exiting")
+            sys.exit(1)
+
 
     assignee = gl.users.list(username=config.assignee_username)[0]
 

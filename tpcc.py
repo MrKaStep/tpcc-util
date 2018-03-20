@@ -2,12 +2,6 @@
 
 import argparse
 from shutil import which
-from git import Repo
-from pathlib import Path
-import json
-import traceback
-from _subprwrapper import run
-import datetime
 import git
 import shutil
 import re

@@ -63,6 +63,7 @@ except FileNotFoundError:
         json.dump({
             'task': ''
         }, json_state)
+        state = json.load(json_state)
 except ValueError:
     logger.error('Malformed state file: JSON format expected')
     sys.exit(1)

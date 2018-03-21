@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #apt-get install python3-venv
-python3 -m venv venv;
+/usr/bin/python3 -m venv venv;
 ./venv/bin/pip3 install -r requirements.txt
 
 mkdir ${HOME}/.tpcc

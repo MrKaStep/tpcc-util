@@ -7,7 +7,7 @@ import traceback
 import datetime
 from _subprwrapper import run
 
-CONFIG_DIR = os.path.join(Path.home(), '.tpcc')
+CONFIG_DIR = os.path.join(str(Path.home()), '.tpcc')
 CONFIG_PATH = os.path.join(CONFIG_DIR, 'config.json')
 STATE_PATH = os.path.join(CONFIG_DIR, 'state.json')
 
@@ -59,11 +59,11 @@ try:
     with open(STATE_PATH) as json_state:
         state = json.load(json_state)
 except FileNotFoundError:
-    with open(os.path.join(CONFIG_DIR, 'state.json'), 'w') as json_state:
-        json.dump({
-            'task': ''
-        }, json_state)
-        state = json.load(json_state)
+    state = {
+        'task': ''
+    }
+    with open(STATE_PATH, 'w') as json_state:
+        json.dump(state, json_state)
 except ValueError:
     logger.error('Malformed state file: JSON format expected')
     sys.exit(1)

@@ -14,7 +14,8 @@ echo '
         "first_name": "<first_name>",
         "last_name": "<last_name>",
         "assignee_username": "<assignee_nickname>",
-        "gitlab_repo_user": "tpcc-course-2018"
+        "gitlab_repo_user": "tpcc-course-2018",
+        "test_before_merge": true
 }
 ' > ${HOME}/.tpcc/config.json
 

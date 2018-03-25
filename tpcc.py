@@ -20,6 +20,8 @@ def add_parser(subparsers, name, description, handlers, action) -> argparse.Argu
     parser = subparsers.add_parser(name, description=description, help=description)
     return parser
 
+def is_theoretical_task(task_name):
+    return not os.path.exists(os.path.join(TPCC_REPO, 'tasks', task_name, 'CMakeLists.txt'))
 
 class SetTaskAction:
     def __init__(self):
@@ -156,7 +158,6 @@ def checkout_to_current_task():
         state['task'] = ''
         exit(1)
 
-
 def status_action(args=None):
     print(current_task())
 
@@ -203,7 +204,12 @@ def build_action(args=None):
 
 class TestAction:
 
-    def run(self, args):
+    @classmethod
+    def run(cls, args):
+        cls.run_tests(args.flavor)
+
+    @classmethod
+    def run_tests(self, flavor):
         dispatcher = {
             'asan':   'run_asan_test',
             'tsan':   'run_tsan_test',
@@ -211,8 +217,6 @@ class TestAction:
             'stress': 'run_all_stress_tests',
             'all':   'run'
         }
-
-        flavor = args.flavor
 
         target = [dispatcher[flavor]]
 
@@ -365,8 +369,14 @@ class GitlabMergeAction:
 
         assignee = gl.users.list(username=assignee_username)[0]
 
-        if args.test:
-            run_tests('all')
+        try:
+            do_tests = config['test_before_merge']
+        except KeyError:
+            print('Key test_before_merge not found in configuration file. Assuming true')
+            do_tests = True
+
+        if do_tests and not is_theoretical_task(current_task()) and args.test:
+            TestAction.run_tests('all')
 
         tpcc_project.mergerequests.create({
             'source_branch': current_task(),
@@ -389,22 +399,6 @@ def main():
         parser = argparse.ArgumentParser(prog='tpcc')
         subparsers = parser.add_subparsers(title='Actions', dest='action')
 
-        # common_handlers = {
-        #     'config': config_action
-        # }
-        #
-        # task_handlers = {
-        #     'build':  build_action,
-        #     'clean':  clean_action,
-        #     'asan':   asan_action,
-        #     'tsan':   tsan_action,
-        #     'unit':   unit_action,
-        #     'stress': stress_action,
-        #     'test':   test_action,
-        #     'style':  style_action,
-        #     'status': status_action
-        # }
-
         common_handlers = {}
         task_handlers = {}
 
@@ -414,11 +408,6 @@ def main():
         add_parser(subparsers, 'build', 'Run cmake for current task', task_handlers, build_action)
         add_parser(subparsers, 'clean', 'Clean current task build directory', task_handlers, clean_action)
         TestAction.add_parser(subparsers, task_handlers)
-        # add_parser(subparsers, 'asan', 'Run asan tests', task_handlers, asan_action)
-        # add_parser(subparsers, 'tsan', 'Run tsan tests', task_handlers, tsan_action)
-        # add_parser(subparsers, 'unit', 'Run unit tests', task_handlers, unit_action)
-        # add_parser(subparsers, 'stress', 'Run stress tests', task_handlers, stress_action)
-        # add_parser(subparsers, 'test', 'Run all tests', task_handlers, test_action)
         add_parser(subparsers, 'style', 'Run clang-format on solution file', task_handlers, style_action)
         CommitTaskAction.add_parser(subparsers, task_handlers)
         GitlabMergeAction.add_parser(subparsers, task_handlers)
@@ -435,7 +424,6 @@ def main():
             checkout_to_current_task()
             if args.action in task_handlers:
                 task_handlers[args.action](args)
-
 
         # some handy exception handling
         # to show nicely formatted and detailed enough

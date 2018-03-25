@@ -83,7 +83,7 @@ class SetTaskAction:
             return
 
         if args.sol_ref:
-            sol_ref = args.sol_ref
+            sol_ref = os.path.join(TPCC_REPO, 'tasks', args.task_name, args.sol_ref)
         else:
             sol_ref = os.path.join(TPCC_REPO, 'tasks', args.task_name, '{}.hpp'.format(args.task_name))
 
@@ -99,7 +99,7 @@ Solution template {1} not found. Specify solution template file:
 \ttpcc task --template <template_file> {0}
 or specify --no-template option to create empty file:
 \ttpcc task --no-template {0}
-            """.format(args.task_name, sol_ref))
+            """.format(args.task_name, os.path.split(sol_ref)[1]))
             logger.error()
             exit(1)
 
@@ -137,7 +137,6 @@ or specify --no-template option to create empty file:
         subparser.add_argument('task_name', help='Full task name')
         template = subparser.add_mutually_exclusive_group()
         template.add_argument('-t', '--template',
-                              nargs=1,
                               dest='sol_ref',
                               help='Solution template')
         template.add_argument('--no-template',
@@ -202,44 +201,63 @@ def build_action(args=None):
         cwd=get_build_path())
 
 
-def run_tests(flavor: str):
-    dispatcher = {
-        'asan':   'run_asan_test',
-        'tsan':   'run_tsan_test',
-        'unit':   'run_all_unit_tests',
-        'stress': 'run_all_stress_tests',
-        'all':   'run'
-    }
+class TestAction:
 
-    target = list(map(lambda x: dispatcher[x], flavor.split()))
+    def run(self, args):
+        dispatcher = {
+            'asan':   'run_asan_test',
+            'tsan':   'run_tsan_test',
+            'unit':   'run_all_unit_tests',
+            'stress': 'run_all_stress_tests',
+            'all':   'run'
+        }
 
-    testing = run_cmake_target(target)
+        flavor = args.flavor
 
-    if testing.returncode != 0:
-        print('Testing failed with exit code {}'.format(testing.returncode))
-        exit(testing.returncode)
+        target = [dispatcher[flavor]]
+
+        testing = run_cmake_target(target)
+
+        if testing.returncode != 0:
+            print('Testing failed with exit code {}'.format(testing.returncode))
+            exit(testing.returncode)
+
+    @classmethod
+    def add_parser(cls, subparsers, handlers):
+        subparser = add_parser(
+            subparsers, 'test', 'Test the solution', handlers, lambda x: cls().run(x)
+        )
+        subparser.add_argument('flavor', help='Which tests to run',
+                               choices=[
+                                   'asan',
+                                   'tsan',
+                                   'unit',
+                                   'stress',
+                                   'all'
+                               ])
 
 
 
-def asan_action(args=None):
-    run_tests('asan')
 
-
-def tsan_action(args=None):
-    run_tests('tsan')
-
-
-def unit_action(args=None):
-    run_tests('unit')
-
-
-def stress_action(args=None):
-    run_tests('stress')
-
-
-def test_action(args=None):
-    run_tests('all')
-
+# def asan_action(args=None):
+#     run_tests('asan')
+#
+#
+# def tsan_action(args=None):
+#     run_tests('tsan')
+#
+#
+# def unit_action(args=None):
+#     run_tests('unit')
+#
+#
+# def stress_action(args=None):
+#     run_tests('stress')
+#
+#
+# def test_action(args=None):
+#     run_tests('all')
+#
 
 def style_action(args=None):
     run_cmake_target(['style'])
@@ -391,15 +409,16 @@ def main():
         task_handlers = {}
 
         SetTaskAction.add_parser(subparsers, common_handlers)
-        add_parser(subparsers, 'status', 'Print current task', task_handlers, status_action)
+        add_parser(subparsers, 'status', 'Print current task', common_handlers, status_action)
         add_parser(subparsers, 'config', 'Output current config', common_handlers, config_action)
         add_parser(subparsers, 'build', 'Run cmake for current task', task_handlers, build_action)
         add_parser(subparsers, 'clean', 'Clean current task build directory', task_handlers, clean_action)
-        add_parser(subparsers, 'asan', 'Run asan tests', task_handlers, asan_action)
-        add_parser(subparsers, 'tsan', 'Run tsan tests', task_handlers, tsan_action)
-        add_parser(subparsers, 'unit', 'Run unit tests', task_handlers, unit_action)
-        add_parser(subparsers, 'stress', 'Run stress tests', task_handlers, stress_action)
-        add_parser(subparsers, 'test', 'Run all tests', task_handlers, test_action)
+        TestAction.add_parser(subparsers, task_handlers)
+        # add_parser(subparsers, 'asan', 'Run asan tests', task_handlers, asan_action)
+        # add_parser(subparsers, 'tsan', 'Run tsan tests', task_handlers, tsan_action)
+        # add_parser(subparsers, 'unit', 'Run unit tests', task_handlers, unit_action)
+        # add_parser(subparsers, 'stress', 'Run stress tests', task_handlers, stress_action)
+        # add_parser(subparsers, 'test', 'Run all tests', task_handlers, test_action)
         add_parser(subparsers, 'style', 'Run clang-format on solution file', task_handlers, style_action)
         CommitTaskAction.add_parser(subparsers, task_handlers)
         GitlabMergeAction.add_parser(subparsers, task_handlers)

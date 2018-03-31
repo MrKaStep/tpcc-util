@@ -77,11 +77,19 @@ def current_task():
     return state['task']
 
 
+def checkout_to_current_task():
+    checkout = run(['git', 'checkout', current_task()],
+                   cwd=SOLUTIONS_REPO,
+                   stdout=DEVNULL,
+                   stderr=DEVNULL)
+
+    if checkout.returncode != 0:
+        logger.error('{} is a configured task but branch seems to be deleted'.format(current_task()))
+        state['task'] = ''
+        exit(1)
+
 if current_task() != '':
-    run(['git', 'checkout', current_task()],
-        cwd=SOLUTIONS_REPO,
-        stdout=DEFAULT_OUTPUT,
-        stderr=DEFAULT_ERROR)
+    checkout_to_current_task()
 
 
 class TaskFormatter(logging.Formatter):
@@ -99,3 +107,4 @@ class TaskFormatter(logging.Formatter):
 
 log_file_handler.setFormatter(TaskFormatter())
 debug_log_file_handler.setFormatter(TaskFormatter())
+stream_handler.setFormatter(TaskFormatter())

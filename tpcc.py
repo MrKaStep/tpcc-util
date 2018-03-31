@@ -53,8 +53,8 @@ class SetTaskAction:
         if self.branch_exists(task_name):
             checkout = run(['git', 'checkout', task_name],
                            cwd=SOLUTIONS_REPO,
-                           stdout=DEFAULT_OUTPUT,
-                           stderr=DEFAULT_ERROR)
+                           stdout=DEVNULL,
+                           stderr=DEVNULL)
             if checkout.returncode != 0:
                 logger.error('Checkout failed with exit code {}'.format(checkout.returncode))
                 exit(checkout.returncode)
@@ -147,17 +147,6 @@ or specify --no-template option to create empty file:
                               help='Create empty file without template')
 
 
-def checkout_to_current_task():
-    checkout = run(['git', 'checkout', current_task()],
-                   cwd=SOLUTIONS_REPO,
-                   stdout=DEVNULL,
-                   stderr=DEVNULL)
-
-    if checkout.returncode != 0:
-        logger.error('{} is a configured task but branch seems to be deleted'.format(current_task()))
-        state['task'] = ''
-        exit(1)
-
 def status_action(args=None):
     print(current_task())
 
@@ -193,8 +182,7 @@ def run_cmake_target(targets):
         logger.warning('No Makefile found. Running build')
         build_action()
 
-    return run(['make'] + targets,
-        cwd=build_path)
+    return run(['make'] + targets, cwd=build_path)
 
 
 def build_action(args=None):
@@ -238,7 +226,10 @@ class TestAction:
                                    'unit',
                                    'stress',
                                    'all'
-                               ])
+                               ],
+                               nargs='?',
+                               default='all',
+                               const='all')
 
 
 
@@ -321,8 +312,10 @@ class CommitTaskAction:
             if commit.returncode != 0:
                 logger.error('Commit failed with exit code {}'.format(commit.returncode))
                 exit(commit.returncode)
+        else:
+            logger.warning('Solution is up-to-date with local repository')
 
-        push = run(['git', 'push'],
+        push = run(['git', 'push', '--set-upstream', 'origin', current_task()],
                    cwd=SOLUTIONS_REPO,
                    stdout=DEFAULT_OUTPUT,
                    stderr=DEFAULT_ERROR)
@@ -421,7 +414,6 @@ def main():
             if current_task() == '':
                 logger.error('No task selected. Specify current task using\n\ttpcc task <task_name>')
 
-            checkout_to_current_task()
             if args.action in task_handlers:
                 task_handlers[args.action](args)
 

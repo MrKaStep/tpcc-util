@@ -7,13 +7,13 @@
 mkdir ${HOME}/.tpcc
 echo '
 {
-        "gitlab_token": "<private_token>",
-        "path_to_repos": "<path_to_solution>",
+        "gitlab_token": "<gitlab_token>",
+        "path_to_repos": "<path_to_repos>",
         "course_repo_name": "tpcc-course-2018",
         "group_number": "<group_number>",
         "first_name": "<first_name>",
         "last_name": "<last_name>",
-        "assignee_username": "<assignee_nickname>",
+        "assignee_username": "<assignee_username>",
         "gitlab_repo_user": "tpcc-course-2018",
         "test_before_merge": true
 }

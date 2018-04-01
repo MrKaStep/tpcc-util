@@ -102,7 +102,7 @@ Solution template {1} not found. Specify solution template file:
 or specify --no-template option to create empty file:
 \ttpcc task --no-template {0}
             """.format(args.task_name, os.path.split(sol_ref)[1]))
-            logger.error()
+            logger.error("template not found")
             exit(1)
 
         self.add_solution_to_git(args.task_name, solution_path)

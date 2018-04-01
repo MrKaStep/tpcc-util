@@ -45,8 +45,9 @@ except Exception as e:
     sys.exit(1)
 
 try:
-    SOLUTIONS_REPO = os.path.join(config['path_to_repos'], 'solutions')
-    TPCC_REPO = os.path.join(config['path_to_repos'], config['course_repo_name'])
+    repos_path = os.path.expanduser(config['path_to_repos'])
+    SOLUTIONS_REPO = os.path.join(repos_path, 'solutions')
+    TPCC_REPO = os.path.join(repos_path, config['course_repo_name'])
 except KeyError as e:
     logger.error('Key "{}" is missing in configuration file'.format(e.args[0]))
     sys.exit(1)

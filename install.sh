@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
 #apt-get install python3-venv
-/usr/bin/python3 -m venv venv;
+
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     sudo apt-get install python3-venv && /usr/bin/python3 -m venv venv;;
+    Darwin*)    pip3 install virtualenv && virtualenv -p python3 venv;;
+esac
+
 ./venv/bin/pip3 install -r requirements.txt
 
 mkdir ${HOME}/.tpcc

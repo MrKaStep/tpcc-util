@@ -157,9 +157,12 @@ def config_action(args=None):
 
 
 def get_clang_compiler():
+
     clang_compiler = which('clang++-5.0')
     if clang_compiler is None:
         clang_compiler = which('clang++-6.0')
+    if clang_compiler is None:
+        clang_compiler = which('clang++')
     if clang_compiler is None:
         logger.error('Suitable clang compiler not found')
         exit(1)

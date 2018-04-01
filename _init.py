@@ -45,7 +45,7 @@ except Exception as e:
     sys.exit(1)
 
 try:
-    repos_path = os.path.expanduser(config['path_to_repos'])
+    repos_path = os.path.expandvars(os.path.expanduser(config['path_to_repos']))
     SOLUTIONS_REPO = os.path.join(repos_path, 'solutions')
     TPCC_REPO = os.path.join(repos_path, config['course_repo_name'])
 except KeyError as e:

@@ -157,7 +157,6 @@ def config_action(args=None):
 
 
 def get_clang_compiler():
-
     clang_compiler = which('clang++-5.0')
     if clang_compiler is None:
         clang_compiler = which('clang++-6.0')
@@ -284,6 +283,7 @@ class CommitTaskAction:
         subparser.add_argument('-m', '--message',
                                help='Commit message',
                                dest='message',
+                               nargs=1,
                                default='{} task solution changed'.format(current_task()))
 
     def run(self, args):

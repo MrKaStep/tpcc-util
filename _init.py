@@ -12,7 +12,7 @@ CONFIG_PATH = os.path.join(CONFIG_DIR, 'config.json')
 STATE_PATH = os.path.join(CONFIG_DIR, 'state.json')
 
 DEVNULL = open(os.devnull, 'wb')
-DEFAULT_OUTPUT = DEVNULL
+DEFAULT_OUTPUT = None
 DEFAULT_ERROR  = None
 
 logger = logging.getLogger('tpcc')

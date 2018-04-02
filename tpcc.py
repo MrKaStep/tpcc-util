@@ -20,8 +20,10 @@ def add_parser(subparsers, name, description, handlers, action) -> argparse.Argu
     parser = subparsers.add_parser(name, description=description, help=description)
     return parser
 
+
 def is_theoretical_task(task_name):
     return not os.path.exists(os.path.join(TPCC_REPO, 'tasks', task_name, 'CMakeLists.txt'))
+
 
 class SetTaskAction:
     def __init__(self):
@@ -388,7 +390,10 @@ class GitlabMergeAction:
         })
 
 
-
+def update_action(args=None):
+    run(['git', 'pull'], cwd=TPCC_REPO,
+        stdout=DEFAULT_OUTPUT,
+        stderr=DEFAULT_ERROR)
 
 def main():
     try:
@@ -407,6 +412,8 @@ def main():
         add_parser(subparsers, 'style', 'Run clang-format on solution file', task_handlers, style_action)
         CommitTaskAction.add_parser(subparsers, task_handlers)
         GitlabMergeAction.add_parser(subparsers, task_handlers)
+        add_parser(subparsers, 'pull', 'Pull from tpcc-course-2018 repository', common_handlers, update_action)
+        add_parser(subparsers, 'update', 'Pull from tpcc-course-2018 repository', common_handlers, update_action)
 
         # process command line arguments
         args = parser.parse_args()

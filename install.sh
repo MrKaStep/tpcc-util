@@ -8,7 +8,15 @@ case "${unameOut}" in
     Darwin*)    pip3 install virtualenv && virtualenv -p python3 venv;;
 esac
 
-./venv/bin/pip3 install -r requirements.txt
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+${DIR}/venv/bin/pip3 install -r requirements.txt
 
 mkdir ${HOME}/.tpcc
 echo '
@@ -25,14 +33,10 @@ echo '
 }
 ' > ${HOME}/.tpcc/config.json
 
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+if ! [ -d ${HOME}/bin ]
+then
+    mkdir ${HOME}/bin
+    echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.profile
+fi
 
-#mkdir -p ${HOME}/.local/bin
-
-ln -s ${DIR}/tpcc /usr/bin/tpcc
+ln -s ${DIR}/tpcc ${HOME}/bin/tpcc

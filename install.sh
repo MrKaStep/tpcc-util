@@ -36,7 +36,12 @@ echo '
 if ! [ -d ${HOME}/bin ]
 then
     mkdir ${HOME}/bin
-    echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.profile
+    if [ -f ${HOME}/.bash_profile ]
+    then
+        echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.bash_profile
+    else
+        echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.profile
+    fi
 fi
 
 ln -s ${DIR}/tpcc ${HOME}/bin/tpcc

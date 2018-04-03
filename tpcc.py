@@ -280,7 +280,6 @@ class CommitTaskAction:
         subparser.add_argument('-m', '--message',
                                help='Commit message',
                                dest='message',
-                               nargs=1,
                                default='{} task solution changed'.format(current_task()))
 
     def run(self, args):

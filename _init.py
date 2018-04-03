@@ -7,6 +7,12 @@ import traceback
 import datetime
 from _subprwrapper import run
 
+
+def exit(exit_code):
+    json.dump(state, open(STATE_PATH, 'w'))
+    sys.exit(exit_code)
+
+
 CONFIG_DIR = os.path.join(str(Path.home()), '.tpcc')
 CONFIG_PATH = os.path.join(CONFIG_DIR, 'config.json')
 STATE_PATH = os.path.join(CONFIG_DIR, 'state.json')

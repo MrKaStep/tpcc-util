@@ -10,11 +10,6 @@ import gitlab
 from _init import *
 
 
-def exit(exit_code):
-    json.dump(state, open(STATE_PATH, 'w'))
-    sys.exit(exit_code)
-
-
 def add_parser(subparsers, name, description, handlers, action) -> argparse.ArgumentParser:
     handlers[name] = action
     parser = subparsers.add_parser(name, description=description, help=description)

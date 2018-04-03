@@ -39,6 +39,9 @@ then
     if [ -f ${HOME}/.bash_profile ]
     then
         echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.bash_profile
+    elif [ -f ${HOME}/.bashrc ]
+    then
+        echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.bashrc
     else
         echo "PATH=${HOME}/bin:\$PATH" >> ${HOME}/.profile
     fi

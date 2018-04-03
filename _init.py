@@ -95,8 +95,6 @@ def checkout_to_current_task():
         state['task'] = ''
         exit(1)
 
-if current_task() != '':
-    checkout_to_current_task()
 
 
 class TaskFormatter(logging.Formatter):

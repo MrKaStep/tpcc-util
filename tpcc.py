@@ -416,6 +416,7 @@ def main():
         if args.action in common_handlers:
             common_handlers[args.action](args)
         else:
+            checkout_to_current_task()
             if current_task() == '':
                 logger.error('No task selected. Specify current task using\n\ttpcc task <task_name>')
 

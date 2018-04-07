@@ -8,7 +8,7 @@ import re
 import gitlab
 
 from _init import *
-
+from yes_no import query_yes_no
 
 def add_parser(subparsers, name, description, handlers, action) -> argparse.ArgumentParser:
     handlers[name] = action
@@ -338,51 +338,68 @@ class GitlabMergeAction:
 
     def run(self, args):
         try:
-            group_number = str(config['group_number'])
-            first_name = config['first_name']
-            last_name = config['last_name']
-            gitlab_token = config['gitlab_token']
-            assignee_username = config['assignee_username']
-            gitlab_repo_user = config['gitlab_repo_user']
-        except KeyError as e:
-            logger.error('Key "{}" is missing in configuration file'.format(e.args[0]))
-            return
+            try:
+                group_number = str(config['group_number'])
+                first_name = config['first_name']
+                last_name = config['last_name']
+                gitlab_token = config['gitlab_token']
+                assignee_username = config['assignee_username']
+                gitlab_repo_user = config['gitlab_repo_user']
+            except KeyError as e:
+                logger.error('Key "{}" is missing in configuration file'.format(e.args[0]))
+                return
 
-        gitlab_repo_name = "{}-{}-{}".format(group_number, first_name, last_name)
+            merged_tasks = get_merged_tasks()
 
-        try:
-            gitlab_repo_name = config['gitlab_repo_name']
-        except KeyError:
-            pass
+            if current_task() in merged_tasks:
+                if not query_yes_no(
+                        "Task {} was already merged. Are you sure you want to continue?".format(current_task()), None):
+                    print("Task not merged")
+                    exit(1)
 
-        gl = gitlab.Gitlab("https://gitlab.com", private_token=gitlab_token)
-        gl.auth()
+            gitlab_repo_name = "{}-{}-{}".format(group_number, first_name, last_name)
 
-        tpcc_project = gl.projects.get(gitlab_repo_user + '/' + gitlab_repo_name)
+            try:
+                gitlab_repo_name = config['gitlab_repo_name']
+            except KeyError:
+                pass
 
-        assignee = gl.users.list(username=assignee_username)[0]
+            gl = gitlab.Gitlab("https://gitlab.com", private_token=gitlab_token)
+            gl.auth()
 
-        try:
-            do_tests = config['test_before_merge']
-        except KeyError:
-            print('Key test_before_merge not found in configuration file. Assuming true')
-            do_tests = True
+            tpcc_project = gl.projects.get(gitlab_repo_user + '/' + gitlab_repo_name)
 
-        if do_tests and not is_theoretical_task(current_task()) and args.test:
-            TestAction.run_tests('all')
+            assignee = gl.users.list(username=assignee_username)[0]
 
-        tpcc_project.mergerequests.create({
-            'source_branch': current_task(),
-            'target_branch': 'master',
-            'title': '[{}] [{}] {} {}'.format(
-                group_number,
-                current_task(),
-                first_name,
-                last_name
-            ),
-            'labels': [group_number, 'HW-{}'.format(current_task()[0])],
-            'assignee_id': assignee.id
-        })
+            try:
+                do_tests = config['test_before_merge']
+            except KeyError:
+                print('Key test_before_merge not found in configuration file. Assuming true')
+                do_tests = True
+
+            if do_tests and not is_theoretical_task(current_task()) and args.test:
+                TestAction.run_tests('all')
+
+            tpcc_project.mergerequests.create({
+                'source_branch': current_task(),
+                'target_branch': 'master',
+                'title': '[{}] [{}] {} {}'.format(
+                    group_number,
+                    current_task(),
+                    first_name,
+                    last_name
+                ),
+                'labels': [group_number, 'HW-{}'.format(current_task()[0])],
+                'assignee_id': assignee.id
+            })
+        except Exception as e:
+            print(e, file=sys.stderr)
+            traceback.print_exc()
+            exit(1)
+
+        merged_tasks.add(current_task())
+
+
 
 
 def update_action(args=None):

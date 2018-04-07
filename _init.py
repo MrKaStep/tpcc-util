@@ -67,7 +67,8 @@ try:
         state = json.load(json_state)
 except FileNotFoundError:
     state = {
-        'task': ''
+        'task': '',
+        'merged_tasks': {}
     }
     with open(STATE_PATH, 'w') as json_state:
         json.dump(state, json_state)
@@ -80,21 +81,38 @@ except Exception as e:
     sys.exit(1)
 
 
+def get_string_state_field(field):
+    try:
+        return state[field]
+    except KeyError:
+        state[field] = ''
+
+
+def get_list_state_field(field):
+    try:
+        return state[field]
+    except KeyError:
+        state[field] = []
+
+
 def current_task():
-    return state['task']
+    return get_string_state_field('task')
+
+
+def get_merged_tasks():
+    return get_list_state_field('merged_tasks')
 
 
 def checkout_to_current_task():
     checkout = run(['git', 'checkout', current_task()],
                    cwd=SOLUTIONS_REPO,
-                   stdout=DEVNULL,
-                   stderr=DEVNULL)
+                   stdout=DEFAULT_OUTPUT,
+                   stderr=DEFAULT_ERROR)
 
     if checkout.returncode != 0:
-        logger.error('{} is a configured task but branch seems to be deleted'.format(current_task()))
+        logger.error('{} is a configured task but checkout failed'.format(current_task()))
         state['task'] = ''
         exit(1)
-
 
 
 class TaskFormatter(logging.Formatter):

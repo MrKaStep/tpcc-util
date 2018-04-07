@@ -84,7 +84,8 @@ class SetTaskAction:
         if args.sol_ref:
             sol_ref = os.path.join(TPCC_REPO, 'tasks', args.task_name, args.sol_ref)
         else:
-            sol_ref = os.path.join(TPCC_REPO, 'tasks', args.task_name, '{}.hpp'.format(args.task_name))
+            ref_file_name = os.path.split(args.task_name)[1].replace('-', '_')
+            sol_ref = os.path.join(TPCC_REPO, 'tasks', args.task_name, '{}.hpp'.format(ref_file_name))
 
         if not args.template:
             os.makedirs(solution_dir, exist_ok=True)

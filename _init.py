@@ -82,10 +82,9 @@ except Exception as e:
 
 
 def get_string_state_field(field):
-    try:
-        return state[field]
-    except KeyError:
+    if field not in state:
         state[field] = ''
+    return state[field]
 
 
 def get_list_state_field(field):

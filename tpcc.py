@@ -25,6 +25,7 @@ class SetTaskAction:
         self.git = git.Repo(SOLUTIONS_REPO).git
 
     def run(self, args):
+        args.task_name = args.task_name.strip('/')
         if not self.is_task_name(args.task_name):
             logger.warning('{} is not a valid task name'.format(args.task_name))
             exit(1)

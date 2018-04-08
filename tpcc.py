@@ -51,8 +51,8 @@ class SetTaskAction:
         if self.branch_exists(task_name):
             checkout = run(['git', 'checkout', task_name],
                            cwd=SOLUTIONS_REPO,
-                           stdout=DEVNULL,
-                           stderr=DEVNULL)
+                           stdout=DEFAULT_OUTPUT,
+                           stderr=DEFAULT_ERROR)
             if checkout.returncode != 0:
                 logger.error('Checkout failed with exit code {}'.format(checkout.returncode))
                 exit(checkout.returncode)
@@ -291,8 +291,8 @@ class CommitTaskAction:
         repo = git.Repo(SOLUTIONS_REPO)
         run(['git', 'add', task_name],
             cwd=SOLUTIONS_REPO,
-            stdout=DEVNULL,
-            stderr=DEVNULL)
+            stdout=DEFAULT_OUTPUT,
+            stderr=DEFAULT_ERROR)
         diffs = repo.index.diff("HEAD")
         for diff in diffs:
             if re.match('{}/solution.(hpp|md)'.format(task_name), diff.b_path):

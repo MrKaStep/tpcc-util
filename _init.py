@@ -19,7 +19,7 @@ STATE_PATH = os.path.join(CONFIG_DIR, 'state.json')
 
 DEVNULL = open(os.devnull, 'wb')
 DEFAULT_OUTPUT = None
-DEFAULT_ERROR  = None
+DEFAULT_ERROR  = DEVNULL
 
 logger = logging.getLogger('tpcc')
 
@@ -68,7 +68,7 @@ try:
 except FileNotFoundError:
     state = {
         'task': '',
-        'merged_tasks': {}
+        'merged_tasks': []
     }
     with open(STATE_PATH, 'w') as json_state:
         json.dump(state, json_state)
@@ -89,10 +89,9 @@ def get_string_state_field(field):
 
 
 def get_list_state_field(field):
-    try:
-        return state[field]
-    except KeyError:
+    if field not in state:
         state[field] = []
+    return state[field]
 
 
 def current_task():

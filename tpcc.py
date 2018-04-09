@@ -398,7 +398,7 @@ class GitlabMergeAction:
             traceback.print_exc()
             exit(1)
 
-        merged_tasks.add(current_task())
+        merged_tasks.append(current_task())
 
 
 

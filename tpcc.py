@@ -348,7 +348,7 @@ class GitlabMergeAction:
                 gitlab_repo_user = config['gitlab_repo_user']
             except KeyError as e:
                 logger.error('Key "{}" is missing in configuration file'.format(e.args[0]))
-                return
+                exit(1)
 
             merged_tasks = get_merged_tasks()
 
@@ -404,7 +404,7 @@ class GitlabMergeAction:
 
 
 def update_action(args=None):
-    run(['git', 'pull'], cwd=TPCC_REPO,
+    run(['git', 'pull', '--hard'], cwd=TPCC_REPO,
         stdout=DEFAULT_OUTPUT,
         stderr=DEFAULT_ERROR)
 

@@ -434,6 +434,7 @@ def main():
         args = parser.parse_args()
 
         if args.verbose:
+            global DEFAULT_ERROR
             DEFAULT_ERROR = None
 
         if args.action in common_handlers:

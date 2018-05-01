@@ -404,13 +404,15 @@ class GitlabMergeAction:
 
 
 def update_action(args=None):
-    run(['git', 'pull', '--hard'], cwd=TPCC_REPO,
+    run(['git', 'pull'], cwd=TPCC_REPO,
         stdout=DEFAULT_OUTPUT,
         stderr=DEFAULT_ERROR)
 
 def main():
     try:
         parser = argparse.ArgumentParser(prog='tpcc')
+        parser.add_argument('-v', '--verbose', action='store_true', dest='verbose')
+
         subparsers = parser.add_subparsers(title='Actions', dest='action')
 
         common_handlers = {}
@@ -430,6 +432,9 @@ def main():
 
         # process command line arguments
         args = parser.parse_args()
+
+        if args.verbose:
+            DEFAULT_ERROR = None
 
         if args.action in common_handlers:
             common_handlers[args.action](args)

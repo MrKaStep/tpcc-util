@@ -305,6 +305,7 @@ class CommitTaskAction:
 
     def commit_task(self, message):
         task_name = current_task()
+        style_action()
         if self.solution_changed(task_name):
             commit = run(['git', 'commit', task_name, '-m', message],
                          cwd=SOLUTIONS_REPO,

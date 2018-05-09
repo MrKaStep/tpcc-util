@@ -28,6 +28,7 @@ class SetTaskAction:
         args.task_name = args.task_name.strip('/')
         if self.branch_exists(args.task_name):
             self.checkout_branch_create(args.task_name)
+            state['task'] = args.task_name
             print('Switched to task {}'.format(args.task_name))
             exit(0)
         if args.check_task and not self.is_task_name(args.task_name):
@@ -312,7 +313,6 @@ class CommitTaskAction:
 
     def commit_task(self, message):
         task_name = current_task()
-        style_action()
         if self.solution_changed(task_name):
             commit = run(['git', 'commit', task_name, '-m', message],
                          cwd=SOLUTIONS_REPO,

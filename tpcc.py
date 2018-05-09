@@ -26,6 +26,10 @@ class SetTaskAction:
 
     def run(self, args):
         args.task_name = args.task_name.strip('/')
+        if self.branch_exists(args.task_name):
+            self.checkout_branch_create(args.task_name)
+            print('Switched to task {}'.format(args.task_name))
+            exit(0)
         if args.check_task and not self.is_task_name(args.task_name):
             logger.warning('{} is not a valid task name'.format(args.task_name))
             exit(1)

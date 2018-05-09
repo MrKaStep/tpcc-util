@@ -26,7 +26,7 @@ class SetTaskAction:
 
     def run(self, args):
         args.task_name = args.task_name.strip('/')
-        if not self.is_task_name(args.task_name):
+        if args.check_task and not self.is_task_name(args.task_name):
             logger.warning('{} is not a valid task name'.format(args.task_name))
             exit(1)
         self.checkout_branch_create(args.task_name)
@@ -135,6 +135,9 @@ or specify --no-template option to create empty file:
         subparser = add_parser(
             subparsers, 'task', 'Change current task', handlers, lambda x: cls().run(x)
         )
+        subparser.add_argument('-f', '--force',
+                               dest='check_task',
+                               action='store_false')
         subparser.add_argument('task_name', help='Full task name')
         template = subparser.add_mutually_exclusive_group()
         template.add_argument('-t', '--template',

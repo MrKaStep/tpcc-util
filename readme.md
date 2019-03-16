@@ -1,4 +1,4 @@
-# tpcc-util
+# tpcc-util (DEPRECATED)
 
 ## Описание
 
